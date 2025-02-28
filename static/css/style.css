@@ -70,6 +70,7 @@
     font-weight: bold;
     cursor: pointer;
     min-width: 40px;
+    transition: all 0.2s ease;
 }
 
 .keyboard button:hover {
@@ -78,6 +79,20 @@
 
 .keyboard button.wide {
     min-width: 80px;
+}
+
+/* Добавляем стили для состояний клавиш */
+.keyboard button.correct {
+    background-color: var(--bs-success);
+}
+
+.keyboard button.present {
+    background-color: var(--bs-warning);
+}
+
+.keyboard button.incorrect {
+    background-color: var(--bs-gray-800);
+    opacity: 0.6;
 }
 
 .shake {
@@ -94,7 +109,7 @@
     :root {
         --tile-size: 50px;
     }
-    
+
     .keyboard button {
         padding: 10px;
         min-width: 32px;

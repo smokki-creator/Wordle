@@ -6,6 +6,7 @@ class WordleGame {
         this.targetWord = '';
         this.maxAttempts = 6;
         this.maxLetters = 5;
+        this.letterStates = {}; // Добавляем отслеживание состояния букв
 
         this.initializeBoard();
         this.initializeKeyboard();
@@ -82,6 +83,30 @@ class WordleGame {
         }
     }
 
+    updateKeyboardColors(guess, result) {
+        const letters = guess.split('');
+        letters.forEach((letter, index) => {
+            const status = result[index];
+            const currentState = this.letterStates[letter] || 'incorrect';
+            // Обновляем состояние только если новое состояние "лучше" предыдущего
+            if (status === 'correct' || (status === 'present' && currentState !== 'correct')) {
+                this.letterStates[letter] = status;
+            }
+        });
+
+        // Обновляем цвета клавиш
+        document.querySelectorAll('.keyboard button').forEach(button => {
+            const key = button.getAttribute('data-key');
+            if (key && key !== 'enter' && key !== 'backspace') {
+                const state = this.letterStates[key] || '';
+                button.className = state; // Очищаем предыдущие классы
+                if (state) {
+                    button.classList.add(state);
+                }
+            }
+        });
+    }
+
     async checkWord() {
         if (this.currentTile !== this.maxLetters) return;
 
@@ -110,6 +135,7 @@ class WordleGame {
         }
 
         this.updateTiles(data.result);
+        this.updateKeyboardColors(guess, data.result); // Calling the new method
 
         if (guess === this.targetWord) {
             this.gameOver = true;
