@@ -3,7 +3,7 @@
     --gap-size: 5px;
     --color-correct: #198754;      /* Bootstrap success */
     --color-present: #ffc107;      /* Bootstrap warning */
-    --color-incorrect: #e9ecef;    /* Очень светлый серый для неиспользованных букв */
+    --color-incorrect: #adb5bd;    /* Более темный серый для неправильных букв */
     --color-button: #f8f9fa;       /* Светлый фон для кнопок */
 }
 
@@ -105,8 +105,8 @@
 
 .keyboard button.incorrect {
     background-color: var(--color-incorrect);
-    color: var(--bs-gray-600);
-    border: 1px solid var(--bs-gray-300);
+    color: white;
+    border: none;
 }
 
 .shake {
