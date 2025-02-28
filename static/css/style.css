@@ -4,7 +4,7 @@
     --color-correct: #198754;      /* Bootstrap success */
     --color-present: #ffc107;      /* Bootstrap warning */
     --color-incorrect: #e9ecef;    /* Очень светлый серый для неиспользованных букв */
-    --color-button: #6c757d;       /* Bootstrap secondary */
+    --color-button: #f8f9fa;       /* Светлый фон для кнопок */
 }
 
 #game-board {
@@ -72,10 +72,10 @@
 .keyboard button {
     margin: 0 2px;
     padding: 15px;
-    border: none;
+    border: 1px solid var(--bs-gray-300);
     border-radius: 4px;
     background: var(--color-button);
-    color: white;
+    color: var(--bs-gray-900);
     font-weight: bold;
     cursor: pointer;
     min-width: 40px;
@@ -93,16 +93,20 @@
 /* Стили для состояний клавиш */
 .keyboard button.correct {
     background-color: var(--color-correct);
+    color: white;
+    border: none;
 }
 
 .keyboard button.present {
     background-color: var(--color-present);
     color: black;
+    border: none;
 }
 
 .keyboard button.incorrect {
     background-color: var(--color-incorrect);
-    color: var(--bs-gray-700);
+    color: var(--bs-gray-600);
+    border: 1px solid var(--bs-gray-300);
 }
 
 .shake {

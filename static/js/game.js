@@ -7,6 +7,7 @@ class WordleGame {
         this.maxAttempts = 6;
         this.maxLetters = 5;
         this.letterStates = {};
+        this.hintsLeft = 3;
 
         this.mainMenu = document.getElementById('mainMenu');
         this.gameSection = document.getElementById('gameSection');
@@ -14,6 +15,7 @@ class WordleGame {
         this.initializeUI();
         this.initializeBoard();
         this.initializeKeyboard();
+        this.initializeHints();
     }
 
     initializeUI() {
@@ -56,6 +58,11 @@ class WordleGame {
         this.currentTile = 0;
         this.gameOver = false;
         this.letterStates = {};
+        this.hintsLeft = 3;
+        document.getElementById('hintsLeft').textContent = this.hintsLeft;
+        document.querySelectorAll('.hint-btn').forEach(btn => {
+            btn.disabled = false;
+        });
 
         // Очистка игрового поля
         document.querySelectorAll('.tile').forEach(tile => {
@@ -65,7 +72,7 @@ class WordleGame {
 
         // Сброс цветов клавиатуры
         document.querySelectorAll('.keyboard button').forEach(button => {
-            if (button.getAttribute('data-key') !== 'enter' && 
+            if (button.getAttribute('data-key') !== 'enter' &&
                 button.getAttribute('data-key') !== 'backspace') {
                 button.className = '';
             }
@@ -326,6 +333,93 @@ class WordleGame {
             messageElement.className = `alert alert-${type}`;
             messageElement.classList.remove('d-none');
         }
+    }
+
+    initializeHints() {
+        document.querySelectorAll('.hint-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                if (this.hintsLeft > 0 && !this.gameOver) {
+                    const hintType = button.getAttribute('data-hint-type');
+                    this.useHint(hintType);
+                }
+            });
+        });
+    }
+
+    useHint(type) {
+        const unrevealedPositions = [];
+        const currentRow = document.querySelector(`#game-board .row:nth-child(${this.currentRow + 1})`);
+
+        for (let i = 0; i < this.maxLetters; i++) {
+            if (!currentRow.children[i].textContent) {
+                unrevealedPositions.push(i);
+            }
+        }
+
+        if (unrevealedPositions.length === 0) {
+            this.showMessage('Сначала очистите текущую строку', 'warning');
+            return;
+        }
+
+        let hint = '';
+        switch (type) {
+            case 'vowel':
+                hint = this.findVowelHint();
+                break;
+            case 'consonant':
+                hint = this.findConsonantHint();
+                break;
+            case 'position':
+                hint = this.findPositionHint();
+                break;
+        }
+
+        if (hint) {
+            this.hintsLeft--;
+            document.getElementById('hintsLeft').textContent = this.hintsLeft;
+            this.showMessage(hint, 'info');
+
+            if (this.hintsLeft === 0) {
+                document.querySelectorAll('.hint-btn').forEach(btn => {
+                    btn.disabled = true;
+                });
+            }
+        }
+    }
+
+    findVowelHint() {
+        const vowels = ['а', 'е', 'ё', 'и', 'о', 'у', 'ы', 'э', 'ю', 'я'];
+        const wordVowels = [...this.targetWord].filter(letter => vowels.includes(letter));
+        if (wordVowels.length > 0) {
+            const randomVowel = wordVowels[Math.floor(Math.random() * wordVowels.length)];
+            return `В слове есть буква "${randomVowel.toUpperCase()}"`;
+        }
+        return 'В слове нет неотгаданных гласных букв';
+    }
+
+    findConsonantHint() {
+        const vowels = ['а', 'е', 'ё', 'и', 'о', 'у', 'ы', 'э', 'ю', 'я'];
+        const wordConsonants = [...this.targetWord].filter(letter => !vowels.includes(letter));
+        if (wordConsonants.length > 0) {
+            const randomConsonant = wordConsonants[Math.floor(Math.random() * wordConsonants.length)];
+            return `В слове есть буква "${randomConsonant.toUpperCase()}"`;
+        }
+        return 'В слове нет неотгаданных согласных букв';
+    }
+
+    findPositionHint() {
+        const unrevealedLetters = [];
+        for (let i = 0; i < this.maxLetters; i++) {
+            if (!this.letterStates[this.targetWord[i]]) {
+                unrevealedLetters.push({letter: this.targetWord[i], position: i + 1});
+            }
+        }
+
+        if (unrevealedLetters.length > 0) {
+            const hint = unrevealedLetters[Math.floor(Math.random() * unrevealedLetters.length)];
+            return `Буква "${hint.letter.toUpperCase()}" находится на ${hint.position}-й позиции`;
+        }
+        return 'Все позиции букв уже известны';
     }
 }
 
