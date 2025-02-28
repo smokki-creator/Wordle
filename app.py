@@ -13,13 +13,6 @@ db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 
 # Database configuration
-# Проверяем существование .env файла и загружаем из него DATABASE_URL
-if os.path.exists(".env"):
-    with open(".env", "r") as f:
-        for line in f:
-            if line.startswith("DATABASE_URL="):
-                os.environ["DATABASE_URL"] = line.split("=", 1)[1].strip()
-
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
