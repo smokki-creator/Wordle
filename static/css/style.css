@@ -8,12 +8,21 @@
     --color-button: #f8f9fa;       /* Светлый фон для кнопок */
 }
 
+/* Адаптив для мобильных устройств */
+@media (max-width: 576px) {
+    :root {
+        --tile-size: 48px;
+        --gap-size: 4px;
+    }
+}
+
 #game-board {
     display: grid;
     grid-template-rows: repeat(6, var(--tile-size));
     gap: var(--gap-size);
     max-width: 350px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .row {
@@ -36,6 +45,12 @@
     background-color: white;
     color: black;
     transition: all 0.3s ease;
+}
+
+@media (max-width: 400px) {
+    .tile {
+        font-size: 1.5rem;
+    }
 }
 
 .tile.filled {
@@ -67,27 +82,30 @@
 .keyboard {
     max-width: 600px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .keyboard-row {
     display: flex;
     justify-content: center;
     margin-bottom: 8px;
+    flex-wrap: wrap;
 }
 
 .keyboard button {
     margin: 0 2px;
-    padding: 15px;
+    padding: 10px;
     border: 1px solid var(--bs-gray-300);
     border-radius: 4px;
     background: var(--color-button);
     color: var(--bs-gray-900);
     font-weight: bold;
     cursor: pointer;
-    min-width: 40px;
+    min-width: 32px;
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+    font-size: 14px;
 }
 
 .keyboard button:hover {
@@ -100,7 +118,20 @@
 }
 
 .keyboard button.wide {
-    min-width: 80px;
+    min-width: 60px;
+}
+
+@media (max-width: 380px) {
+    .keyboard button {
+        min-width: 28px;
+        padding: 8px 5px;
+        margin: 0 1px;
+        font-size: 12px;
+    }
+    
+    .keyboard button.wide {
+        min-width: 50px;
+    }
 }
 
 /* Стили для состояний клавиш */
@@ -231,5 +262,41 @@
         padding: 10px;
         min-width: 32px;
         font-size: 0.9rem;
+    }
+}
+
+/* Дополнительные адаптивные стили */
+@media (max-width: 576px) {
+    .row {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    #game-board {
+        justify-self: center;
+        align-self: center;
+    }
+    
+    /* Уменьшаем размер заголовков */
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Подгоняем кнопки */
+    .btn {
+        padding: 0.375rem 0.75rem;
+    }
+    
+    /* Подсказки и управление */
+    #hints .btn-group {
+        flex-wrap: wrap;
+    }
+    
+    #hints .btn {
+        margin-bottom: 0.5rem;
     }
 }
