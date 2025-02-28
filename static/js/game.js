@@ -6,7 +6,7 @@ class WordleGame {
         this.targetWord = '';
         this.maxAttempts = 6;
         this.maxLetters = 5;
-        
+
         this.initializeBoard();
         this.initializeKeyboard();
         this.fetchNewWord();
@@ -93,7 +93,11 @@ class WordleGame {
         const response = await fetch('/api/check-word', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({guess, target: this.targetWord})
+            body: JSON.stringify({
+                guess,
+                target: this.targetWord,
+                attempts: this.currentRow
+            })
         });
 
         const data = await response.json();
