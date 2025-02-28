@@ -3,7 +3,8 @@
     --gap-size: 5px;
     --color-correct: #198754;      /* Bootstrap success */
     --color-present: #ffc107;      /* Bootstrap warning */
-    --color-incorrect: #adb5bd;    /* Более темный серый для неправильных букв */
+    --color-incorrect-tile: #e9ecef;    /* Светлый серый для плиток */
+    --color-incorrect-key: #adb5bd;    /* Темный серый для клавиш */
     --color-button: #f8f9fa;       /* Светлый фон для кнопок */
 }
 
@@ -53,8 +54,8 @@
 }
 
 .tile.incorrect {
-    background-color: var(--color-incorrect);
-    border-color: var(--color-incorrect);
+    background-color: var(--color-incorrect-tile);
+    border-color: var(--color-incorrect-tile);
     color: black;
 }
 
@@ -104,7 +105,7 @@
 }
 
 .keyboard button.incorrect {
-    background-color: var(--color-incorrect);
+    background-color: var(--color-incorrect-key);
     color: white;
     border: none;
 }
