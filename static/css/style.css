@@ -1,6 +1,10 @@
 :root {
     --tile-size: 62px;
     --gap-size: 5px;
+    --color-correct: #198754;      /* Bootstrap success */
+    --color-present: #ffc107;      /* Bootstrap warning */
+    --color-incorrect: #dee2e6;    /* Light gray for unused letters */
+    --color-button: #6c757d;       /* Bootstrap secondary */
 }
 
 #game-board {
@@ -20,7 +24,7 @@
 .tile {
     width: var(--tile-size);
     height: var(--tile-size);
-    border: 2px solid var(--bs-gray-700);
+    border: 2px solid var(--bs-gray-400);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,6 +32,8 @@
     font-weight: bold;
     text-transform: uppercase;
     user-select: none;
+    background-color: white;
+    color: black;
 }
 
 .tile.filled {
@@ -35,18 +41,21 @@
 }
 
 .tile.correct {
-    background-color: var(--bs-success);
-    border-color: var(--bs-success);
+    background-color: var(--color-correct);
+    border-color: var(--color-correct);
+    color: white;
 }
 
 .tile.present {
-    background-color: var(--bs-warning);
-    border-color: var(--bs-warning);
+    background-color: var(--color-present);
+    border-color: var(--color-present);
+    color: black;
 }
 
 .tile.incorrect {
-    background-color: var(--bs-gray-700);
-    border-color: var(--bs-gray-700);
+    background-color: var(--color-incorrect);
+    border-color: var(--color-incorrect);
+    color: black;
 }
 
 .keyboard {
@@ -65,8 +74,8 @@
     padding: 15px;
     border: none;
     border-radius: 4px;
-    background: var(--bs-gray-700);
-    color: var(--bs-light);
+    background: var(--color-button);
+    color: white;
     font-weight: bold;
     cursor: pointer;
     min-width: 40px;
@@ -74,25 +83,26 @@
 }
 
 .keyboard button:hover {
-    background: var(--bs-gray-600);
+    opacity: 0.8;
 }
 
 .keyboard button.wide {
     min-width: 80px;
 }
 
-/* Добавляем стили для состояний клавиш */
+/* Стили для состояний клавиш */
 .keyboard button.correct {
-    background-color: var(--bs-success);
+    background-color: var(--color-correct);
 }
 
 .keyboard button.present {
-    background-color: var(--bs-warning);
+    background-color: var(--color-present);
+    color: black;
 }
 
 .keyboard button.incorrect {
-    background-color: var(--bs-gray-800);
-    opacity: 0.6;
+    background-color: var(--color-incorrect);
+    color: var(--bs-gray-700);
 }
 
 .shake {
@@ -103,6 +113,25 @@
     0%, 100% { transform: translateX(0); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
     20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Стили для модальных окон */
+.modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+#customWordsList {
+    list-style: none;
+    padding: 0;
+}
+
+.custom-word-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--bs-gray-200);
 }
 
 @media (max-width: 400px) {

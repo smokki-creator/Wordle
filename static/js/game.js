@@ -6,17 +6,152 @@ class WordleGame {
         this.targetWord = '';
         this.maxAttempts = 6;
         this.maxLetters = 5;
-        this.letterStates = {}; // Добавляем отслеживание состояния букв
+        this.letterStates = {};
+        this.gameSection = document.getElementById('gameSection');
 
+        this.initializeUI();
         this.initializeBoard();
         this.initializeKeyboard();
-        this.fetchNewWord();
+    }
+
+    initializeUI() {
+        // Инициализация кнопок и модальных окон
+        document.getElementById('playButton').addEventListener('click', () => {
+            this.startNewGame();
+        });
+
+        document.getElementById('statsButton').addEventListener('click', () => {
+            this.showStats();
+        });
+
+        document.getElementById('wordsButton').addEventListener('click', () => {
+            this.showWordsManager();
+        });
+
+        document.getElementById('addWordForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.addCustomWord();
+        });
+    }
+
+    async startNewGame() {
+        this.resetGame();
+        await this.fetchNewWord();
+        this.gameSection.classList.remove('d-none');
+        document.getElementById('message').classList.add('d-none');
+    }
+
+    resetGame() {
+        this.currentRow = 0;
+        this.currentTile = 0;
+        this.gameOver = false;
+        this.letterStates = {};
+
+        // Очистка игрового поля
+        document.querySelectorAll('.tile').forEach(tile => {
+            tile.textContent = '';
+            tile.className = 'tile';
+        });
+
+        // Сброс цветов клавиатуры
+        document.querySelectorAll('.keyboard button').forEach(button => {
+            if (button.getAttribute('data-key') !== 'enter' && 
+                button.getAttribute('data-key') !== 'backspace') {
+                button.className = '';
+            }
+        });
     }
 
     async fetchNewWord() {
         const response = await fetch('/api/new-word');
         const data = await response.json();
         this.targetWord = data.word;
+    }
+
+    async showStats() {
+        const response = await fetch('/api/stats');
+        const stats = await response.json();
+        const statsContent = document.getElementById('statsContent');
+
+        let html = `
+            <div class="stats-container">
+                <div class="row text-center">
+                    <div class="col">
+                        <h3>${stats.totalGames}</h3>
+                        <p>Всего игр</p>
+                    </div>
+                    <div class="col">
+                        <h3>${stats.winRate}%</h3>
+                        <p>Процент побед</p>
+                    </div>
+                    <div class="col">
+                        <h3>${stats.averageAttempts}</h3>
+                        <p>Среднее число попыток</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        statsContent.innerHTML = html;
+        new bootstrap.Modal(document.getElementById('statsModal')).show();
+    }
+
+    async showWordsManager() {
+        await this.loadCustomWords();
+        new bootstrap.Modal(document.getElementById('wordsModal')).show();
+    }
+
+    async loadCustomWords() {
+        const response = await fetch('/api/custom-words');
+        const words = await response.json();
+        const wordsList = document.getElementById('customWordsList');
+
+        wordsList.innerHTML = words.map(word => `
+            <div class="custom-word-item">
+                <span>${word}</span>
+                <button class="btn btn-sm btn-danger" onclick="game.deleteCustomWord('${word}')">
+                    Удалить
+                </button>
+            </div>
+        `).join('');
+    }
+
+    async addCustomWord() {
+        const input = document.getElementById('newWord');
+        const word = input.value.toLowerCase();
+
+        if (!/^[а-яё]{5}$/.test(word)) {
+            this.showMessage('Слово должно состоять из 5 русских букв', 'danger');
+            return;
+        }
+
+        const response = await fetch('/api/custom-words', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({word})
+        });
+
+        if (response.ok) {
+            input.value = '';
+            await this.loadCustomWords();
+            this.showMessage('Слово успешно добавлено', 'success');
+        } else {
+            const data = await response.json();
+            this.showMessage(data.error || 'Ошибка при добавлении слова', 'danger');
+        }
+    }
+
+    async deleteCustomWord(word) {
+        const response = await fetch(`/api/custom-words/${word}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            await this.loadCustomWords();
+            this.showMessage('Слово успешно удалено', 'success');
+        } else {
+            this.showMessage('Ошибка при удалении слова', 'danger');
+        }
     }
 
     initializeBoard() {
@@ -88,18 +223,16 @@ class WordleGame {
         letters.forEach((letter, index) => {
             const status = result[index];
             const currentState = this.letterStates[letter] || 'incorrect';
-            // Обновляем состояние только если новое состояние "лучше" предыдущего
             if (status === 'correct' || (status === 'present' && currentState !== 'correct')) {
                 this.letterStates[letter] = status;
             }
         });
 
-        // Обновляем цвета клавиш
         document.querySelectorAll('.keyboard button').forEach(button => {
             const key = button.getAttribute('data-key');
             if (key && key !== 'enter' && key !== 'backspace') {
                 const state = this.letterStates[key] || '';
-                button.className = state; // Очищаем предыдущие классы
+                button.className = state;
                 if (state) {
                     button.classList.add(state);
                 }
@@ -135,7 +268,7 @@ class WordleGame {
         }
 
         this.updateTiles(data.result);
-        this.updateKeyboardColors(guess, data.result); // Calling the new method
+        this.updateKeyboardColors(guess, data.result);
 
         if (guess === this.targetWord) {
             this.gameOver = true;
@@ -168,6 +301,9 @@ class WordleGame {
     }
 }
 
+// Глобальная переменная для доступа к игре из обработчиков событий
+let game;
+
 document.addEventListener('DOMContentLoaded', () => {
-    new WordleGame();
+    game = new WordleGame();
 });
