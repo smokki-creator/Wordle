@@ -1,0 +1,103 @@
+:root {
+    --tile-size: 62px;
+    --gap-size: 5px;
+}
+
+#game-board {
+    display: grid;
+    grid-template-rows: repeat(6, var(--tile-size));
+    gap: var(--gap-size);
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(5, var(--tile-size));
+    gap: var(--gap-size);
+}
+
+.tile {
+    width: var(--tile-size);
+    height: var(--tile-size);
+    border: 2px solid var(--bs-gray-700);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.tile.filled {
+    border-color: var(--bs-gray-600);
+}
+
+.tile.correct {
+    background-color: var(--bs-success);
+    border-color: var(--bs-success);
+}
+
+.tile.present {
+    background-color: var(--bs-warning);
+    border-color: var(--bs-warning);
+}
+
+.tile.incorrect {
+    background-color: var(--bs-gray-700);
+    border-color: var(--bs-gray-700);
+}
+
+.keyboard {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.keyboard button {
+    margin: 0 2px;
+    padding: 15px;
+    border: none;
+    border-radius: 4px;
+    background: var(--bs-gray-700);
+    color: var(--bs-light);
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 40px;
+}
+
+.keyboard button:hover {
+    background: var(--bs-gray-600);
+}
+
+.keyboard button.wide {
+    min-width: 80px;
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@media (max-width: 400px) {
+    :root {
+        --tile-size: 50px;
+    }
+    
+    .keyboard button {
+        padding: 10px;
+        min-width: 32px;
+        font-size: 0.9rem;
+    }
+}
