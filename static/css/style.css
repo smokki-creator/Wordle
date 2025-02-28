@@ -80,7 +80,7 @@
 }
 
 .keyboard {
-    max-width: 600px;
+    max-width: 500px;
     margin: 0 auto;
     width: 100%;
 }
@@ -88,24 +88,25 @@
 .keyboard-row {
     display: flex;
     justify-content: center;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
+    margin-bottom: 5px;
+    flex-wrap: nowrap;
 }
 
 .keyboard button {
-    margin: 0 2px;
-    padding: 10px;
+    margin: 0 1px;
+    padding: 8px 4px;
     border: 1px solid var(--bs-gray-300);
     border-radius: 4px;
     background: var(--color-button);
     color: var(--bs-gray-900);
     font-weight: bold;
     cursor: pointer;
-    min-width: 32px;
+    min-width: 30px;
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
-    font-size: 14px;
+    font-size: 13px;
+    flex: 1;
 }
 
 .keyboard button:hover {
@@ -118,19 +119,20 @@
 }
 
 .keyboard button.wide {
-    min-width: 60px;
+    min-width: 50px;
+    flex: 2;
 }
 
-@media (max-width: 380px) {
+@media (max-width: 400px) {
     .keyboard button {
-        min-width: 28px;
-        padding: 8px 5px;
+        min-width: 24px;
+        padding: 6px 2px;
         margin: 0 1px;
-        font-size: 12px;
+        font-size: 11px;
     }
     
     .keyboard button.wide {
-        min-width: 50px;
+        min-width: 40px;
     }
 }
 
@@ -258,10 +260,23 @@
         --tile-size: 50px;
     }
 
-    .keyboard button {
-        padding: 10px;
-        min-width: 32px;
-        font-size: 0.9rem;
+    #game-board {
+        max-width: 280px;
+    }
+
+    .container {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+}
+
+@media (max-width: 320px) {
+    :root {
+        --tile-size: 45px;
+    }
+
+    #game-board {
+        max-width: 250px;
     }
 }
 
