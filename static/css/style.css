@@ -3,7 +3,7 @@
     --gap-size: 5px;
     --color-correct: #198754;      /* Bootstrap success */
     --color-present: #ffc107;      /* Bootstrap warning */
-    --color-incorrect: #dee2e6;    /* Light gray for unused letters */
+    --color-incorrect: #e9ecef;    /* Очень светлый серый для неиспользованных букв */
     --color-button: #6c757d;       /* Bootstrap secondary */
 }
 
@@ -115,23 +115,39 @@
     20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
+/* Стили для главного меню */
+#mainMenu {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 /* Стили для модальных окон */
 .modal-body {
     max-height: 70vh;
     overflow-y: auto;
 }
 
+/* Стили для списка пользовательских слов */
 #customWordsList {
-    list-style: none;
-    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .custom-word-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem;
-    border-bottom: 1px solid var(--bs-gray-200);
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--bs-gray-100);
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.custom-word-item:hover {
+    background-color: var(--bs-gray-200);
 }
 
 @media (max-width: 400px) {

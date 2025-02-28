@@ -7,6 +7,8 @@ class WordleGame {
         this.maxAttempts = 6;
         this.maxLetters = 5;
         this.letterStates = {};
+
+        this.mainMenu = document.getElementById('mainMenu');
         this.gameSection = document.getElementById('gameSection');
 
         this.initializeUI();
@@ -15,7 +17,7 @@ class WordleGame {
     }
 
     initializeUI() {
-        // Инициализация кнопок и модальных окон
+        // Инициализация кнопок главного меню
         document.getElementById('playButton').addEventListener('click', () => {
             this.startNewGame();
         });
@@ -28,6 +30,13 @@ class WordleGame {
             this.showWordsManager();
         });
 
+        // Кнопка возврата в меню
+        document.getElementById('backToMenu').addEventListener('click', () => {
+            this.gameSection.classList.add('d-none');
+            this.mainMenu.classList.remove('d-none');
+        });
+
+        // Форма добавления слов
         document.getElementById('addWordForm').addEventListener('submit', (e) => {
             e.preventDefault();
             this.addCustomWord();
@@ -37,6 +46,7 @@ class WordleGame {
     async startNewGame() {
         this.resetGame();
         await this.fetchNewWord();
+        this.mainMenu.classList.add('d-none');
         this.gameSection.classList.remove('d-none');
         document.getElementById('message').classList.add('d-none');
     }
@@ -75,19 +85,17 @@ class WordleGame {
 
         let html = `
             <div class="stats-container">
-                <div class="row text-center">
-                    <div class="col">
-                        <h3>${stats.totalGames}</h3>
-                        <p>Всего игр</p>
-                    </div>
-                    <div class="col">
-                        <h3>${stats.winRate}%</h3>
-                        <p>Процент побед</p>
-                    </div>
-                    <div class="col">
-                        <h3>${stats.averageAttempts}</h3>
-                        <p>Среднее число попыток</p>
-                    </div>
+                <div class="text-center mb-3">
+                    <h3 class="display-4">${stats.totalGames}</h3>
+                    <p class="mb-0">Всего игр</p>
+                </div>
+                <div class="text-center mb-3">
+                    <h3 class="display-4">${stats.winRate}%</h3>
+                    <p class="mb-0">Процент побед</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="display-4">${stats.averageAttempts}</h3>
+                    <p class="mb-0">Среднее число попыток</p>
                 </div>
             </div>
         `;
@@ -106,11 +114,16 @@ class WordleGame {
         const words = await response.json();
         const wordsList = document.getElementById('customWordsList');
 
+        if (words.length === 0) {
+            wordsList.innerHTML = '<div class="text-center text-muted">Пока нет добавленных слов</div>';
+            return;
+        }
+
         wordsList.innerHTML = words.map(word => `
             <div class="custom-word-item">
-                <span>${word}</span>
-                <button class="btn btn-sm btn-danger" onclick="game.deleteCustomWord('${word}')">
-                    Удалить
+                <span class="fw-bold">${word.toUpperCase()}</span>
+                <button class="btn btn-sm btn-outline-danger" onclick="game.deleteCustomWord('${word}')">
+                    <i class="bi bi-trash"></i>
                 </button>
             </div>
         `).join('');
@@ -134,23 +147,27 @@ class WordleGame {
         if (response.ok) {
             input.value = '';
             await this.loadCustomWords();
-            this.showMessage('Слово успешно добавлено', 'success');
+            this.showMessage('Слово успешно добавлено', 'success', 'wordsModal');
         } else {
             const data = await response.json();
-            this.showMessage(data.error || 'Ошибка при добавлении слова', 'danger');
+            this.showMessage(data.error || 'Ошибка при добавлении слова', 'danger', 'wordsModal');
         }
     }
 
     async deleteCustomWord(word) {
+        if (!confirm(`Удалить слово "${word.toUpperCase()}"?`)) {
+            return;
+        }
+
         const response = await fetch(`/api/custom-words/${word}`, {
             method: 'DELETE'
         });
 
         if (response.ok) {
             await this.loadCustomWords();
-            this.showMessage('Слово успешно удалено', 'success');
+            this.showMessage('Слово успешно удалено', 'success', 'wordsModal');
         } else {
-            this.showMessage('Ошибка при удалении слова', 'danger');
+            this.showMessage('Ошибка при удалении слова', 'danger', 'wordsModal');
         }
     }
 
@@ -177,10 +194,10 @@ class WordleGame {
         });
 
         document.addEventListener('keydown', (e) => {
-            const key = e.key.toLowerCase();
+            let key = e.key.toLowerCase();
             if (key === 'enter') {
                 this.handleKeyPress('enter');
-            } else if (key === 'backspace') {
+            } else if (key === 'backspace' || key === 'delete') {
                 this.handleKeyPress('backspace');
             } else if (/^[а-яё]$/.test(key)) {
                 this.handleKeyPress(key);
@@ -232,7 +249,7 @@ class WordleGame {
             const key = button.getAttribute('data-key');
             if (key && key !== 'enter' && key !== 'backspace') {
                 const state = this.letterStates[key] || '';
-                button.className = state;
+                button.className = '';
                 if (state) {
                     button.classList.add(state);
                 }
@@ -293,11 +310,22 @@ class WordleGame {
         });
     }
 
-    showMessage(text, type) {
-        const messageElement = document.getElementById('message');
-        messageElement.textContent = text;
-        messageElement.className = `alert alert-${type}`;
-        messageElement.classList.remove('d-none');
+    showMessage(text, type, modalId = null) {
+        if (modalId) {
+            const modal = document.getElementById(modalId);
+            const messageDiv = modal.querySelector('.alert') || document.createElement('div');
+            messageDiv.className = `alert alert-${type} mt-3`;
+            messageDiv.textContent = text;
+            if (!modal.querySelector('.alert')) {
+                modal.querySelector('.modal-body').appendChild(messageDiv);
+            }
+            setTimeout(() => messageDiv.remove(), 3000);
+        } else {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = text;
+            messageElement.className = `alert alert-${type}`;
+            messageElement.classList.remove('d-none');
+        }
     }
 }
 
